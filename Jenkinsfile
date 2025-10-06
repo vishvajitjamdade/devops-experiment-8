@@ -19,18 +19,21 @@ pipeline {
         }
 
         stage('Test Image') {
-    steps {
-        bat """
-        docker run --rm -v "%cd%:/app" -w /app ${dockerImage} sh -c "echo Hello from container && ls -la"
-        """
-    }
-}
-
+            steps {
+                bat """
+                docker run --rm -v "%cd%:/app" -w /app ${dockerImage} sh -c "echo Hello from container && ls -la"
+                """
+            }
+        }
 
         stage('Push Image') {
             steps {
-                // Push only if needed
-                bat "docker push ${dockerImage}"
+                script {
+                    // Use Docker credentials stored in Jenkins
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-credentials') {
+                        docker.image("${dockerImage}").push()
+                    }
+                }
             }
         }
     }
