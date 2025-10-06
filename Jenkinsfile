@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        registry = "world_winner/my-app-exp8"
+        registry = "world_winner/devops-experiment-8"
         registryCredential = "dockerhub-credentials"
         dockerImage = ""
     }
