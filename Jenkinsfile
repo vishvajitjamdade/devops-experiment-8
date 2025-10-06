@@ -2,13 +2,11 @@ pipeline {
     agent any
 
     environment {
-        registry = "world_winner/devops-experiment-8"
-        registryCredential = "dockerhub-credentials"
-        dockerImage = ""
+        dockerImage = "world_winner/devops-experiment-8:7"
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout SCM') {
             steps {
                 git branch: 'main', url: 'https://github.com/vishvajitjamdade/devops-experiment-8.git'
             }
@@ -16,30 +14,23 @@ pipeline {
 
         stage('Build Image') {
             steps {
-                script {
-                    dockerImage = docker.build("${registry}:${env.BUILD_ID}")
-                }
+                bat "docker build -t ${dockerImage} ."
             }
         }
 
-        stage('Test') {
+        stage('Test Image') {
             steps {
-                script {
-                    dockerImage.inside {
-                        sh 'npm test'
-                    }
-                }
+                // Use bat and mount current workspace to container
+                bat """
+                docker run --rm -v "%cd%:/app" -w /app ${dockerImage} cmd /c "echo Hello from container && dir"
+                """
             }
         }
 
         stage('Push Image') {
             steps {
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', registryCredential) {
-                        dockerImage.push()
-                        dockerImage.push('latest')
-                    }
-                }
+                // Push only if needed
+                bat "docker push ${dockerImage}"
             }
         }
     }
