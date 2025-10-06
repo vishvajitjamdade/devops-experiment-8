@@ -10,14 +10,14 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/vishvajitjamdade/devops-experiment-8.git'
+                git branch: 'main', url: 'https://github.com/vishvajitjamdade/devops-experiment-8.git'
             }
         }
 
         stage('Build Image') {
             steps {
                 script {
-                    dockerImage = docker.build "${registry}:${env.BUILD_ID}"
+                    dockerImage = docker.build("${registry}:${env.BUILD_ID}")
                 }
             }
         }
