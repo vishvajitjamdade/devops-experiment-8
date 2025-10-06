@@ -19,13 +19,13 @@ pipeline {
         }
 
         stage('Test Image') {
-            steps {
-                // Use bat and mount current workspace to container
-                bat """
-                docker run --rm -v "%cd%:/app" -w /app ${dockerImage} cmd /c "echo Hello from container && dir"
-                """
-            }
-        }
+    steps {
+        bat """
+        docker run --rm -v "%cd%:/app" -w /app ${dockerImage} sh -c "echo Hello from container && ls -la"
+        """
+    }
+}
+
 
         stage('Push Image') {
             steps {
